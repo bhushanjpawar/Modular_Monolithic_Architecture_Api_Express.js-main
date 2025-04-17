@@ -24,7 +24,7 @@ import { ENCRYPTION_KEY } from '@/config';
 import Container from 'typedi';
 import mediatR from '@/shared/medaitR/index';
 import { IHashPasswordResult } from '@/shared/services/users/user.HashPassword.Service';
-import { getQueryRunner, StatusEnum } from '@kishornaik/mma_db';
+import { getQueryRunner, StatusEnum } from '@bhushanpawar/ldd';
 import { UserSharedCacheService } from '@/modules/users/shared/cache';
 import { ValidationMiddleware } from '@/middlewares/validation.middleware';
 import { CreateUserDecryptRequestService } from './services/decryptRequest';
@@ -40,6 +40,7 @@ import { CreateUserMapResponseService } from './services/mapResponse';
 import { CreateUserEncryptResponseService } from './services/encryptResponse';
 import { CreateUserRequestDto, CreateUserResponseDto } from '../contracts';
 import { UserCreatedDomainEventService } from '../events/domain/userCreated';
+import { authenticateHmac } from '@/middlewares/hmac.middlware';
 
 // @region Controller
 @JsonController('/api/v1/users')
@@ -50,6 +51,7 @@ export class CreateUserController {
 	@HttpCode(StatusCodes.OK)
 	@OnUndefined(StatusCodes.BAD_REQUEST)
 	@UseBefore(ValidationMiddleware(AesRequestDto))
+	@UseBefore(authenticateHmac)
 	public async createAsync(@Body() request: AesRequestDto, @Res() res: Response) {
 		const response = await mediatR.send(new CreateUserCommand(request));
 		return res.status(response.StatusCode).json(response);
@@ -93,9 +95,7 @@ export class CreateUserCommandHandler
 
 	public constructor() {
 		this._createUserDecryptRequestService = Container.get(CreateUserDecryptRequestService);
-		this._createUserRequestValidationService = Container.get(
-			CreateUserRequestValidationService
-		);
+		this._createUserRequestValidationService = Container.get(CreateUserRequestValidationService);
 		this._createUserHashPasswordService = Container.get(CreateUserHashPasswordService);
 		this._createUserKeysService = Container.get(CreateUserKeysService);
 		this._createUserMapEntityService = Container.get(CreateUserMapEntityService);

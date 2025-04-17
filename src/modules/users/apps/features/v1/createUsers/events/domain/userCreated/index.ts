@@ -5,7 +5,6 @@ import {
 import medaitR from '@/shared/medaitR';
 import { sealed } from '@/shared/utils/decorators/sealed';
 import { logConstruct, logger } from '@/shared/utils/helpers/loggers';
-import { StatusEnum } from '@kishornaik/mma_db';
 import { NotificationData, NotificationHandler, notificationHandler } from 'mediatr-ts';
 
 // @region Domain Event

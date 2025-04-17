@@ -11,7 +11,7 @@ import {
 	AddUserService,
 	AddUserSettingsService,
 	QueryRunner,
-} from '@kishornaik/mma_db';
+} from '@bhushanpawar/ldd';
 import { StatusCodes } from 'http-status-codes';
 
 Container.set<AddUserService>(AddUserService, new AddUserService());
